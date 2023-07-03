@@ -36,7 +36,7 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
   try {
     let body = '';
 
-    req.on('data', (chunk) => {
+    req.on('data', (chunk: string) => {
       body += chunk;
     });
 
@@ -54,6 +54,7 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
     await writeUsersFile({ data: [...users.data, newUser] });
 
     res.statusCode = 201;
+    res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(newUser));
   } catch (error) {
     res.statusCode = 500;
@@ -86,16 +87,65 @@ export const handleUserGet: RequestListener = async (req, res): Promise<void> =>
   }
 };
 
-export const handleUserPut: RequestListener = async (_, res): Promise<void> => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Get all users!');
+export const handleUserPut: RequestListener = async (req, res): Promise<void> => {
+  try {
+    const { userId } = extractUserIdAndBasePath(req.url || '');
+
+    let body = '';
+
+    req.on('data', (chunk: string) => {
+      body += chunk;
+    });
+
+    await new Promise((resolve) => {
+      req.on('end', resolve);
+    });
+
+    const users = await readUsersFile();
+    const index = users?.data.findIndex((user) => user.id === userId);
+
+    if (index !== -1) {
+      const updatedUsers = users?.data.map((user, i) =>
+        index === i ? { ...user, ...JSON.parse(body), id: userId as typeof uuidV4 } : user,
+      );
+
+      await writeUsersFile({ data: updatedUsers });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(updatedUsers[index]));
+    } else {
+      handleNotFound(req, res);
+    }
+  } catch (error) {
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 };
 
-export const handleUserDelete: RequestListener = async (_, res): Promise<void> => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Get all users!');
+export const handleUserDelete: RequestListener = async (req, res): Promise<void> => {
+  try {
+    const { userId } = extractUserIdAndBasePath(req.url || '');
+
+    if (!validate(userId as string)) {
+      res.statusCode = 400;
+      res.end('Invalid userId');
+      return;
+    }
+
+    const users = await readUsersFile();
+    const index = users.data.findIndex((user) => user.id === userId);
+
+    if (index !== -1) {
+      await writeUsersFile({ data: users.data.filter((user) => user.id !== userId) });
+      res.statusCode = 204;
+      res.end();
+    } else {
+      handleNotFound(req, res);
+    }
+  } catch (error) {
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 };
 
 export const handleNotFound: RequestListener = (_, res) => {
