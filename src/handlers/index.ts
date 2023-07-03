@@ -48,6 +48,12 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
       ...JSON.parse(body),
     };
 
+    if (!newUser.username || !newUser.age || !newUser.hobbies) {
+      res.statusCode = 400;
+      res.end('Missing required fields!');
+      return;
+    }
+
     const users = await readUsersFile();
 
     await writeUsersFile({ data: [...users.data, newUser] });
