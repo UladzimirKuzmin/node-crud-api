@@ -74,7 +74,7 @@ export const handleUserGet: RequestListener = async (req, res): Promise<void> =>
 
     if (!validate(userId as string)) {
       res.statusCode = 400;
-      res.end('Bad request.');
+      res.end('userId does not exist');
       return;
     }
 
@@ -93,6 +93,12 @@ export const handleUserGet: RequestListener = async (req, res): Promise<void> =>
 export const handleUserPut: RequestListener = async (req, res): Promise<void> => {
   try {
     const { userId } = extractUserIdAndBasePath(req.url || '');
+
+    if (!validate(userId as string)) {
+      res.statusCode = 400;
+      res.end('userId does not exist');
+      return;
+    }
 
     let body = '';
 
@@ -130,7 +136,7 @@ export const handleUserDelete: RequestListener = async (req, res): Promise<void>
 
     if (!validate(userId as string)) {
       res.statusCode = 400;
-      res.end('Invalid userId');
+      res.end('userId does not exist');
       return;
     }
 
