@@ -1,0 +1,36 @@
+{
+  "name": "node-crud-api",
+  "version": "1.0.0",
+  "description": "Nodejs CRUD api",
+  "main": "dist/index.js",
+  "repository": "https://github.com/UladzimirKuzmin/node-crud-api.git",
+  "author": "Uladzimir Kuzmin",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "start": "nodemon --exec 'node --es-module-specifier-resolution=node --loader ts-node/esm' src/index.ts",
+    "start:prod": "yarn build && node dist/index.js",
+    "build": "tsc --p tsconfig.prod.json",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "@types/uuid": "^9.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6",
+    "uuid": "^9.0.0"
+  }
+}
