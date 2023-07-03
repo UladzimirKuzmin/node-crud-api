@@ -1,6 +1,5 @@
 import { promises as fsPromises } from 'fs';
 import { fileURLToPath } from 'url';
-import { v4 } from 'uuid';
 import path from 'path';
 
 import { User } from '../types';
@@ -10,16 +9,16 @@ export function getFilename() {
 }
 
 export function extractUserIdAndBasePath(url: string): {
-  userId?: typeof v4 | string;
+  userId?: string;
   basePath: string;
 } {
-  const id: typeof v4 | string = url.replace('/api/users/', '');
+  const id: string = url.replace('/api/users/', '');
 
   return url
     .split('/')
     .filter((part) => part.length > 0)
     .reduce(
-      (acc: { userId?: typeof v4 | string; basePath: string }, item: typeof v4 | string) =>
+      (acc: { userId?: string; basePath: string }, item: string) =>
         item === id
           ? { ...acc, userId: item }
           : { ...acc, basePath: [acc.basePath, item].join('/') },

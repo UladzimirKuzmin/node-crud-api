@@ -1,27 +1,6 @@
 import http, { ServerResponse, IncomingMessage } from 'http';
-import { v4 } from 'uuid';
 import { User } from '../types';
 import { handleUsersGet, handleUserGet, handleUserDelete } from './index';
-
-function getMock() {
-  const users: { data: User[] } = {
-    data: [
-      {
-        id: '95b50714-292f-4999-bbce-7328eef49acb' as unknown as typeof v4,
-        username: 'user1',
-        age: 25,
-        hobbies: ['reading', 'gaming'],
-      },
-      {
-        id: '13be3208-54af-4a39-831c-d26c67f32a5a' as unknown as typeof v4,
-        username: 'user2',
-        age: 30,
-        hobbies: ['coding', 'sports'],
-      },
-    ],
-  };
-  return { users, userId: '95b50714-292f-4999-bbce-7328eef49acb' };
-}
 
 jest.mock('http');
 
@@ -31,6 +10,26 @@ jest.mock('../helpers', () => ({
   writeUsersFile: jest.fn().mockResolvedValue(undefined),
   extractUserIdAndBasePath: jest.fn().mockReturnValue({ userId: getMock().userId }),
 }));
+
+function getMock() {
+  const users: { data: User[] } = {
+    data: [
+      {
+        id: '95b50714-292f-4999-bbce-7328eef49acb',
+        username: 'user1',
+        age: 25,
+        hobbies: ['reading', 'gaming'],
+      },
+      {
+        id: '13be3208-54af-4a39-831c-d26c67f32a5a',
+        username: 'user2',
+        age: 30,
+        hobbies: ['coding', 'sports'],
+      },
+    ],
+  };
+  return { users, userId: '95b50714-292f-4999-bbce-7328eef49acb' };
+}
 
 describe('Handlers', () => {
   describe('handleUsersGet', () => {

@@ -68,11 +68,11 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
 
 export const handleUserGet: RequestListener = async (req, res): Promise<void> => {
   try {
-    const { userId } = extractUserIdAndBasePath(req.url || '');
+    const { userId = '' } = extractUserIdAndBasePath(req.url || '');
     const users = await readUsersFile();
     const user = users?.data.find((user) => user.id === userId);
 
-    if (!validate(userId as string)) {
+    if (!validate(userId)) {
       res.statusCode = 400;
       res.end('userId does not exist');
       return;
@@ -92,9 +92,9 @@ export const handleUserGet: RequestListener = async (req, res): Promise<void> =>
 
 export const handleUserPut: RequestListener = async (req, res): Promise<void> => {
   try {
-    const { userId } = extractUserIdAndBasePath(req.url || '');
+    const { userId = '' } = extractUserIdAndBasePath(req.url || '');
 
-    if (!validate(userId as string)) {
+    if (!validate(userId)) {
       res.statusCode = 400;
       res.end('userId does not exist');
       return;
@@ -115,7 +115,7 @@ export const handleUserPut: RequestListener = async (req, res): Promise<void> =>
 
     if (index !== -1) {
       const updatedUsers = users?.data.map((user, i) =>
-        index === i ? { ...user, ...JSON.parse(body), id: userId as typeof uuidV4 } : user,
+        index === i ? { ...user, ...JSON.parse(body), id: userId } : user,
       );
 
       await writeUsersFile({ data: updatedUsers });
@@ -132,9 +132,9 @@ export const handleUserPut: RequestListener = async (req, res): Promise<void> =>
 
 export const handleUserDelete: RequestListener = async (req, res): Promise<void> => {
   try {
-    const { userId } = extractUserIdAndBasePath(req.url || '');
+    const { userId = '' } = extractUserIdAndBasePath(req.url || '');
 
-    if (!validate(userId as string)) {
+    if (!validate(userId)) {
       res.statusCode = 400;
       res.end('userId does not exist');
       return;
