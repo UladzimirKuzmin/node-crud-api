@@ -27,8 +27,7 @@ export const handleUsersGet: RequestListener = async (req, res): Promise<void> =
       handleNotFound(req, res);
     }
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Internal Server Error');
+    throw `Users GET operation failed: ${error}`;
   }
 };
 
@@ -57,8 +56,7 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(newUser));
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Internal Server Error');
+    throw `Users POST operation failed: ${error}`;
   }
 };
 
@@ -82,8 +80,7 @@ export const handleUserGet: RequestListener = async (req, res): Promise<void> =>
       handleNotFound(req, res);
     }
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Internal Server Error');
+    throw `User GET operation failed: ${error}`;
   }
 };
 
@@ -117,8 +114,7 @@ export const handleUserPut: RequestListener = async (req, res): Promise<void> =>
       handleNotFound(req, res);
     }
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Internal Server Error');
+    throw `Users PUT operation failed: ${error}`;
   }
 };
 
@@ -143,8 +139,7 @@ export const handleUserDelete: RequestListener = async (req, res): Promise<void>
       handleNotFound(req, res);
     }
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Internal Server Error');
+    throw `Users DELETE operation failed: ${error}`;
   }
 };
 
