@@ -146,7 +146,7 @@ export const handleUserDelete: RequestListener = async (req, res): Promise<void>
     if (index !== -1) {
       await writeUsersFile({ data: users.data.filter((user) => user.id !== userId) });
       res.statusCode = 204;
-      res.end();
+      res.end('User successfully deleted!');
     } else {
       handleNotFound(req, res);
     }

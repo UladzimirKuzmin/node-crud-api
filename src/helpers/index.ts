@@ -5,6 +5,10 @@ import path from 'path';
 
 import { User } from '../types';
 
+export function getFilename() {
+  return fileURLToPath(import.meta.url);
+}
+
 export function extractUserIdAndBasePath(url: string): {
   userId?: typeof v4 | string;
   basePath: string;
@@ -24,7 +28,7 @@ export function extractUserIdAndBasePath(url: string): {
 }
 
 export async function readUsersFile(): Promise<{ data: User[] }> {
-  const __filename = fileURLToPath(import.meta.url);
+  const __filename = getFilename();
   const __dirname = path.dirname(__filename);
   const pathToDb = path.resolve(__dirname, '../db/users.json');
 
@@ -37,7 +41,7 @@ export async function readUsersFile(): Promise<{ data: User[] }> {
 }
 
 export async function writeUsersFile(users: { data: User[] }): Promise<void> {
-  const __filename = fileURLToPath(import.meta.url);
+  const __filename = getFilename();
   const __dirname = path.dirname(__filename);
   const pathToDb = path.resolve(__dirname, '../db/users.json');
 

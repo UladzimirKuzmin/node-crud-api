@@ -14,7 +14,8 @@
     "build": "tsc --p tsconfig.prod.json",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src/**/*.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:verbose": "jest --silent=false"
   },
   "dependencies": {
     "dotenv": "^16.3.1"
@@ -23,8 +24,8 @@
     "@types/jest": "^29.5.2",
     "@types/node": "^20.3.3",
     "@types/uuid": "^9.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
