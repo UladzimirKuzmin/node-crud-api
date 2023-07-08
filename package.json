@@ -9,8 +9,9 @@
   "private": false,
   "scripts": {
     "start": "nodemon --esm ./src/index.ts",
-    "start:prod": "yarn build && node dist/index.js",
-    "build": "tsc --p tsconfig.prod.json",
+    "start:prod": "yarn build && yarn cp && node dist/index.js",
+    "build": "tsc",
+    "cp": "cp -R src/db dist",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src/**/*.ts",
     "test": "jest",
