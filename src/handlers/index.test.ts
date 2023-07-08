@@ -4,7 +4,7 @@ import { handleUsersGet, handleUserGet, handleUserDelete } from './index';
 
 jest.mock('http');
 
-jest.mock('../helpers', () => ({
+jest.mock('../utils', () => ({
   getFilename: jest.fn(),
   readUsersFile: jest.fn().mockResolvedValue(getMock().users),
   writeUsersFile: jest.fn().mockResolvedValue(undefined),

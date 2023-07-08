@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { routes } from './routes';
-import { extractUserIdAndBasePath } from '../helpers';
+import { extractUserIdAndBasePath, sendResponseMessage } from '../utils';
 
 export const router = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   const { basePath } = extractUserIdAndBasePath(req.url || '');
@@ -11,8 +11,6 @@ export const router = async (req: IncomingMessage, res: ServerResponse): Promise
     await routeHandler(req, res);
   } catch (error) {
     console.error('Error:', error);
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Internal Server Error');
+    sendResponseMessage(res, 500, 'Internal server error');
   }
 };

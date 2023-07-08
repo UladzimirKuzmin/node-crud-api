@@ -1,7 +1,13 @@
 import { RequestListener } from 'node:http';
-import { v4 as uuidV4, validate } from 'uuid';
+import { validate } from 'uuid';
 
-import { extractUserIdAndBasePath, readUsersFile, writeUsersFile } from '../helpers';
+import {
+  extractUserIdAndBasePath,
+  parsePostData,
+  sendResponseMessage,
+  sendResponseUserData,
+} from '../utils';
+import { findUsers, findUserById, createUser, updateUser, deleteUser } from '../models';
 import { User } from '../types';
 
 export const handleUsers: RequestListener = async (req, res): Promise<void> => {
@@ -16,15 +22,13 @@ export const handleUsers: RequestListener = async (req, res): Promise<void> => {
   await usersHandlers[method](req, res);
 };
 
-export const handleUsersGet: RequestListener = async (req, res): Promise<void> => {
+export const handleUsersGet: RequestListener = async (_, res): Promise<void> => {
   try {
-    const users = await readUsersFile();
+    const users = await findUsers();
     if (users) {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(users));
+      sendResponseUserData(res, 200, users);
     } else {
-      handleNotFound(req, res);
+      sendResponseMessage(res, 404, 'Resource is not found!');
     }
   } catch (error) {
     throw `Users GET operation failed: ${error}`;
@@ -33,34 +37,16 @@ export const handleUsersGet: RequestListener = async (req, res): Promise<void> =
 
 export const handleUsersPost: RequestListener = async (req, res): Promise<void> => {
   try {
-    let body = '';
+    const body = await parsePostData(req);
+    const data = JSON.parse(body);
 
-    req.on('data', (chunk: string) => {
-      body += chunk;
-    });
-
-    await new Promise((resolve) => {
-      req.on('end', resolve);
-    });
-
-    const newUser: User = {
-      id: uuidV4(),
-      ...JSON.parse(body),
-    };
-
-    if (!newUser.username || !newUser.age || !newUser.hobbies) {
-      res.statusCode = 400;
-      res.end('Missing required fields!');
+    if (!data.username || !data.age || !data.hobbies) {
+      sendResponseMessage(res, 400, 'Missing required fields!');
       return;
     }
 
-    const users = await readUsersFile();
-
-    await writeUsersFile({ data: [...users.data, newUser] });
-
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(newUser));
+    const newUser = (await createUser(body)) as User;
+    sendResponseUserData(res, 201, newUser);
   } catch (error) {
     throw `Users POST operation failed: ${error}`;
   }
@@ -69,21 +55,18 @@ export const handleUsersPost: RequestListener = async (req, res): Promise<void> 
 export const handleUserGet: RequestListener = async (req, res): Promise<void> => {
   try {
     const { userId = '' } = extractUserIdAndBasePath(req.url || '');
-    const users = await readUsersFile();
-    const user = users?.data.find((user) => user.id === userId);
 
     if (!validate(userId)) {
-      res.statusCode = 400;
-      res.end('userId does not exist');
+      sendResponseMessage(res, 400, 'userId is not valid, should have uuidV4 format');
       return;
     }
 
+    const user = await findUserById(userId);
+
     if (user) {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(user));
+      sendResponseUserData(res, 200, user);
     } else {
-      handleNotFound(req, res);
+      sendResponseMessage(res, 404, 'Resource is not found!');
     }
   } catch (error) {
     throw `User GET operation failed: ${error}`;
@@ -95,35 +78,17 @@ export const handleUserPut: RequestListener = async (req, res): Promise<void> =>
     const { userId = '' } = extractUserIdAndBasePath(req.url || '');
 
     if (!validate(userId)) {
-      res.statusCode = 400;
-      res.end('userId does not exist');
+      sendResponseMessage(res, 400, 'userId is not valid, should have uuidV4 format');
       return;
     }
 
-    let body = '';
+    const body = await parsePostData(req);
+    const user = await updateUser(userId, body);
 
-    req.on('data', (chunk: string) => {
-      body += chunk;
-    });
-
-    await new Promise((resolve) => {
-      req.on('end', resolve);
-    });
-
-    const users = await readUsersFile();
-    const index = users?.data.findIndex((user) => user.id === userId);
-
-    if (index !== -1) {
-      const updatedUsers = users?.data.map((user, i) =>
-        index === i ? { ...user, ...JSON.parse(body), id: userId } : user,
-      );
-
-      await writeUsersFile({ data: updatedUsers });
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(updatedUsers[index]));
+    if (user) {
+      sendResponseUserData(res, 200, user);
     } else {
-      handleNotFound(req, res);
+      sendResponseMessage(res, 404, 'Resource is not found!');
     }
   } catch (error) {
     throw `Users PUT operation failed: ${error}`;
@@ -135,30 +100,20 @@ export const handleUserDelete: RequestListener = async (req, res): Promise<void>
     const { userId = '' } = extractUserIdAndBasePath(req.url || '');
 
     if (!validate(userId)) {
-      res.statusCode = 400;
-      res.end('userId does not exist');
+      sendResponseMessage(res, 400, 'userId is not valid, should have uuidV4 format');
       return;
     }
 
-    const users = await readUsersFile();
-    const index = users.data.findIndex((user) => user.id === userId);
+    const userToDelete = await deleteUser(userId);
 
-    if (index !== -1) {
-      await writeUsersFile({ data: users.data.filter((user) => user.id !== userId) });
-      res.statusCode = 204;
-      res.end('User successfully deleted!');
+    if (userToDelete) {
+      sendResponseMessage(res, 204, 'User successfully deleted!');
     } else {
-      handleNotFound(req, res);
+      sendResponseMessage(res, 404, 'Resource is not found!');
     }
   } catch (error) {
     throw `Users DELETE operation failed: ${error}`;
   }
-};
-
-export const handleNotFound: RequestListener = (_, res) => {
-  res.statusCode = 404;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Resource is not found!');
 };
 
 const userHandlers: Record<string, RequestListener> = {
