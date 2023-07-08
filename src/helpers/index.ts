@@ -1,12 +1,7 @@
 import { promises as fsPromises } from 'fs';
-import { fileURLToPath } from 'url';
 import path from 'path';
 
 import { User } from '../types';
-
-export function getFilename() {
-  return fileURLToPath(import.meta.url);
-}
 
 export function extractUserIdAndBasePath(url: string): {
   userId?: string;
@@ -27,8 +22,6 @@ export function extractUserIdAndBasePath(url: string): {
 }
 
 export async function readUsersFile(): Promise<{ data: User[] }> {
-  const __filename = getFilename();
-  const __dirname = path.dirname(__filename);
   const pathToDb = path.resolve(__dirname, '../db/users.json');
 
   try {
@@ -40,9 +33,7 @@ export async function readUsersFile(): Promise<{ data: User[] }> {
 }
 
 export async function writeUsersFile(users: { data: User[] }): Promise<void> {
-  const __filename = getFilename();
-  const __dirname = path.dirname(__filename);
-  const pathToDb = path.resolve(__dirname, '../db/users.json');
+  const pathToDb = path.resolve(__dirname, 'db/users.json');
 
   try {
     await fsPromises.writeFile(pathToDb, JSON.stringify(users, null, 2));
