@@ -33,7 +33,7 @@ export async function readUsersFile(): Promise<{ data: User[] }> {
 }
 
 export async function writeUsersFile(users: { data: User[] }): Promise<void> {
-  const pathToDb = path.resolve(__dirname, 'db/users.json');
+  const pathToDb = path.resolve(__dirname, '../db/users.json');
 
   try {
     await fsPromises.writeFile(pathToDb, JSON.stringify(users, null, 2));
