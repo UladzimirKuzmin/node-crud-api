@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "id": "b8fee77f-7925-4ff9-9cb0-d5666a25c46a",
+      "username": "Padmé Amidala",
+      "age": 45,
+      "hobbies": [
+        "blasters",
+        "secret marriage",
+        "leadership"
+      ]
+    },
+    {
+      "id": "547b1214-0590-4908-8c71-de52b76a6a92",
+      "username": "Luke Skywalker",
+      "age": 22,
+      "hobbies": [
+        "laser sabers",
+        "x-wing starfighters",
+        "white side of the force"
+      ]
+    },
+    {
+      "id": "5f263c8d-e7e6-4585-af1b-567defafa523",
+      "username": "Anakin Skywalker",
+      "age": 45,
+      "hobbies": [
+        "laser sabers",
+        "black metal suits",
+        "dark side of the force"
+      ]
+    },
+    {
+      "id": "374a13b6-5ca8-4b4b-8154-73d187f89dbd",
+      "username": "Leia Organa",
+      "age": 22,
+      "hobbies": [
+        "blasters"
+      ]
+    }
+  ]
+}
